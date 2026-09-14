@@ -38,3 +38,26 @@ export async function countMergedPullRequests(login) {
 }
 
 export { GitHubError };
+
+// A user can own more than 100 repositories, so page until the last page is
+// short. Forks are skipped: Starstruck only counts repositories you created.
+export async function getTopRepoStars(login) {
+  let page = 1;
+  let best = { name: null, stars: 0 };
+
+  while (true) {
+    const repos = await request(
+      `/users/${encodeURIComponent(login)}/repos?per_page=100&page=${page}&type=owner`,
+    );
+
+    for (const repo of repos) {
+      if (repo.fork) continue;
+      if (repo.stargazers_count > best.stars) {
+        best = { name: repo.name, stars: repo.stargazers_count };
+      }
+    }
+
+    if (repos.length < 100) return best;
+    page += 1;
+  }
+}

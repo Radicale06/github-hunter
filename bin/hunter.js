@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 import { BADGES, tierFor, nextThreshold } from '../src/badges.js';
-import { getUser, countMergedPullRequests, GitHubError } from '../src/github.js';
+import {
+  getUser,
+  countMergedPullRequests,
+  getTopRepoStars,
+  GitHubError,
+} from '../src/github.js';
 
 const USAGE = `github-hunter - track your progress toward GitHub achievements
 
@@ -34,6 +39,12 @@ async function main() {
   console.log(`${user.name ?? user.login} (@${user.login})\n`);
 
   report('pull-shark', await countMergedPullRequests(user.login));
+
+  const top = await getTopRepoStars(user.login);
+  report('starstruck', top.stars);
+  if (top.name) {
+    console.log(`  most starred: ${top.name}`);
+  }
 }
 
 main().catch((error) => {
