@@ -1,0 +1,23 @@
+{
+  "name": "github-hunter",
+  "version": "0.1.0",
+  "description": "Track your progress toward GitHub profile achievements from the command line.",
+  "type": "module",
+  "bin": {
+    "github-hunter": "bin/hunter.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "keywords": [
+    "github",
+    "achievements",
+    "badges",
+    "cli"
+  ],
+  "license": "MIT"
+}
