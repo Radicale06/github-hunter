@@ -6,6 +6,9 @@
   "bin": {
     "github-hunter": "bin/hunter.js"
   },
+  "scripts": {
+    "test": "node --test"
+  },
   "engines": {
     "node": ">=18"
   },
