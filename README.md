@@ -20,6 +20,13 @@ Pull Shark (tier 1)
   Pull requests merged: 2 - 14 to go
 ```
 
+Pass `--json` to get the same report as machine-readable JSON, handy for
+scripts and profile READMEs:
+
+```
+node bin/hunter.js <username> --json
+```
+
 Unauthenticated requests to the GitHub search API are limited to 10 per
 minute. Set `GITHUB_TOKEN` to a personal access token to raise that limit:
 

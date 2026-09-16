@@ -10,40 +10,76 @@ import {
 const USAGE = `github-hunter - track your progress toward GitHub achievements
 
 Usage:
-  github-hunter <username>
+  github-hunter <username> [--json]
+
+Options:
+  --json        print the report as JSON instead of text
 
 Environment:
   GITHUB_TOKEN  optional token, raises the API rate limit
 `;
 
-function report(badge, count) {
+function entry(badge, count, extra = {}) {
   const { name, description } = BADGES[badge];
-  const tier = tierFor(badge, count);
-  const next = nextThreshold(badge, count);
-  const label = tier === 0 ? 'not earned' : `tier ${tier}`;
-  const remaining = next === null ? 'max tier reached' : `${next - count} to go`;
+  return {
+    badge,
+    name,
+    description,
+    count,
+    tier: tierFor(badge, count),
+    next: nextThreshold(badge, count),
+    ...extra,
+  };
+}
 
-  console.log(`${name} (${label})`);
-  console.log(`  ${description}: ${count} - ${remaining}`);
+function printText(user, achievements) {
+  console.log(`${user.name ?? user.login} (@${user.login})\n`);
+
+  for (const item of achievements) {
+    const label = item.tier === 0 ? 'not earned' : `tier ${item.tier}`;
+    const remaining =
+      item.next === null ? 'max tier reached' : `${item.next - item.count} to go`;
+
+    console.log(`${item.name} (${label})`);
+    console.log(`  ${item.description}: ${item.count} - ${remaining}`);
+    if (item.repository) {
+      console.log(`  most starred: ${item.repository}`);
+    }
+  }
+}
+
+function printJson(user, achievements) {
+  const report = {
+    user: { login: user.login, name: user.name ?? null },
+    achievements,
+  };
+  console.log(JSON.stringify(report, null, 2));
 }
 
 async function main() {
-  const [login] = process.argv.slice(2);
+  const args = process.argv.slice(2);
+  const wantsHelp = args.includes('--help') || args.includes('-h');
+  const asJson = args.includes('--json');
+  const login = args.find((arg) => !arg.startsWith('-'));
 
-  if (!login || login === '--help' || login === '-h') {
+  if (wantsHelp || !login) {
     console.log(USAGE);
-    process.exit(login ? 0 : 1);
+    process.exit(wantsHelp ? 0 : 1);
   }
 
   const user = await getUser(login);
-  console.log(`${user.name ?? user.login} (@${user.login})\n`);
-
-  report('pull-shark', await countMergedPullRequests(user.login));
-
+  const merged = await countMergedPullRequests(user.login);
   const top = await getTopRepoStars(user.login);
-  report('starstruck', top.stars);
-  if (top.name) {
-    console.log(`  most starred: ${top.name}`);
+
+  const achievements = [
+    entry('pull-shark', merged),
+    entry('starstruck', top.stars, { repository: top.name }),
+  ];
+
+  if (asJson) {
+    printJson(user, achievements);
+  } else {
+    printText(user, achievements);
   }
 }
 
