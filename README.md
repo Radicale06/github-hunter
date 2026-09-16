@@ -59,6 +59,10 @@ expect a delay of anywhere from a few hours to a couple of days. If none of
 them show up at all, check that **Show Achievements on my profile** is enabled
 under Settings, and that the email on your commits is verified on your account.
 
+## Contributing
+
+Issues and pull requests are welcome. Run `npm test` before opening a PR.
+
 ## License
 
 MIT
