@@ -1,3 +1,5 @@
+import { describeReset } from './rate-limit.js';
+
 const API = 'https://api.github.com';
 
 class GitHubError extends Error {}
@@ -11,8 +13,10 @@ async function request(path) {
   const response = await fetch(`${API}${path}`, { headers });
 
   if (response.status === 403 && response.headers.get('x-ratelimit-remaining') === '0') {
+    const reset = Number(response.headers.get('x-ratelimit-reset'));
+    const when = reset ? ` (${describeReset(reset)})` : '';
     throw new GitHubError(
-      'GitHub API rate limit reached. Set GITHUB_TOKEN to raise the limit.',
+      `GitHub API rate limit reached${when}. Set GITHUB_TOKEN to raise the limit.`,
     );
   }
   if (response.status === 404) {
