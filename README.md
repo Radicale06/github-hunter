@@ -18,6 +18,9 @@ Oussama Chaabene (@Radicale06)
 
 Pull Shark (tier 1)
   Pull requests merged: 2 - 14 to go
+Starstruck (not earned)
+  Stars on a repository you own: 6 - 10 to go
+  most starred: Substrate
 ```
 
 Pass `--json` to get the same report as machine-readable JSON, handy for
