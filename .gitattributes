@@ -1,0 +1,3 @@
+# Keep line endings consistent across platforms so checkouts on Windows do
+# not rewrite every file to CRLF.
+* text=auto eol=lf
