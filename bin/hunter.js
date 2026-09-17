@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { readFileSync } from 'node:fs';
 import { BADGES, tierFor, nextThreshold } from '../src/badges.js';
 import {
   getUser,
@@ -14,6 +15,7 @@ Usage:
 
 Options:
   --json        print the report as JSON instead of text
+  --version     print the version and exit
 
 Environment:
   GITHUB_TOKEN  optional token, raises the API rate limit
@@ -60,6 +62,12 @@ async function main() {
   const args = process.argv.slice(2);
   const wantsHelp = args.includes('--help') || args.includes('-h');
   const asJson = args.includes('--json');
+
+  if (args.includes('--version') || args.includes('-v')) {
+    const manifest = new URL('../package.json', import.meta.url);
+    console.log(JSON.parse(readFileSync(manifest, 'utf8')).version);
+    return;
+  }
   const login = args.find((arg) => !arg.startsWith('-'));
 
   if (wantsHelp || !login) {
